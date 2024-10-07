@@ -13,21 +13,25 @@ class CountryController extends Controller
 
         //map country names, total patients, patients that passed and patients that recovered 
         $countryData = $countries->map(function($country) {
-            // Count total patients
-            $totalPatients = $country->patients->count();
+            $totalPatients = $country->patients()->count();
 
-            // Count patients where 'death' flag is true
             $deathCount = $country->patients->where('death', true)->count();
-
-            // Count patients where 'recovered' flag is true
+            
             $recoveredCount = $country->patients->where('recovered', true)->count();
+            
+            $infectedPatients = $country->patients
+            ->where('death', false)
+            ->where('recovered', false)
+            ->count();
 
-            // Return the country with the additional patient data
+            // Return the country with patient status count
             return [
+                'country_id' => $country->id,
                 'country' => $country->name,
                 'country_code' => $country->code,
                 'patients' => [
-                    'total' => $totalPatients,
+                    'total_reports' => $totalPatients,
+                    'infected' => $infectedPatients,
                     'death' => $deathCount,
                     'recovered' => $recoveredCount
                 ]
