@@ -5,13 +5,20 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Country;
 use Illuminate\Http\JsonResponse;
+use Log;
 
 class CountryController extends Controller
 {
     public function list(): JsonResponse {
         $countries = Country::with('patients')->get();
 
-        //map country names, total patients, patients that passed and patients that recovered 
+        $countryData = $this->countryData($countries); 
+        
+        return response()->json(["countries" => $countryData, "token" => csrf_token()]);
+    }
+
+    //map country names, total patients, patients that passed and patients that recovered 
+    protected function countryData($countries) {
         $countryData = $countries->map(function($country) {
             $totalPatients = $country->patients()->count();
 
@@ -34,10 +41,10 @@ class CountryController extends Controller
                     'infected' => $infectedPatients,
                     'death' => $deathCount,
                     'recovered' => $recoveredCount
-                ]
+                ],
             ];
         });
-        
-        return response()->json($countryData);
+
+        return $countryData;
     }
 }
