@@ -20,7 +20,7 @@ class PatientSeeder extends Seeder
         foreach ($countries as $country) {
             // Add 3 to 6 new patients for each country
             Patient::factory(InfectedFactory::class)
-                ->count(rand(6, 15))
+                ->count(rand(2, 6))
                 ->create([
                     'country_id' => $country->id,
                 ]);
